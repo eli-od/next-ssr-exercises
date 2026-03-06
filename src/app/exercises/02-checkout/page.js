@@ -1,5 +1,5 @@
 'use client';
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import DATA from './data';
 import reducer from './reducer';
@@ -12,6 +12,28 @@ function CheckoutExercise() {
     reducer,
     []
   );
+
+  useEffect(() => {
+    //grab stored items on render
+    const savedTable = window.localStorage.getItem('checkout-items');
+    if (savedTable) {
+      JSON.parse(savedTable).forEach(item => {
+        for (let i = 0; i < item.quantity; i++) {
+          dispatch({
+            type: 'add-item',
+            item,
+          });
+        }
+      });
+    }
+  }, []);
+
+  useEffect(() => {
+    //update cart items in local storage whenever items change
+    if (typeof items === 'object') {
+      window.localStorage.setItem('checkout-items', JSON.stringify(items));
+    }
+  }, [items]);
 
   return (
     <>
